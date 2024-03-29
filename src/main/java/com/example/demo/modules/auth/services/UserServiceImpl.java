@@ -1,9 +1,10 @@
 package com.example.demo.modules.auth.services;
 
-import com.example.demo.modules.admin.entities.Admin;
-import com.example.demo.modules.admin.repositories.AdminRepository;
-import com.example.demo.modules.teachers.entities.Teacher;
-import com.example.demo.modules.teachers.repositories.TeacherRepository;
+import com.example.demo.modules.admin.Admin;
+import com.example.demo.modules.admin.AdminRepository;
+import com.example.demo.modules.auth.services.impl.UserService;
+import com.example.demo.modules.teachers.Teacher;
+import com.example.demo.modules.teachers.TeacherRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

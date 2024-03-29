@@ -10,5 +10,11 @@ showKidTable:
 	docker exec -it isd_be-db-1  mysql "select * from kid"
 showClassTable:
 	docker exec -it isd_be-db-1  mysql "select * from class"
+dropContainer:
+	docker rm isd_be-db-1
+runContainer:
+	docker-compose up -d
+stopContainer:
+	docker-compose down
 
-.PHONEY : connectDb showTables showAdminTable showTeacherTable showKidTable showClassTable
+.PHONEY : connectDb showTables showAdminTable showTeacherTable showKidTable showClassTable dropContainer runContainer stopContainer

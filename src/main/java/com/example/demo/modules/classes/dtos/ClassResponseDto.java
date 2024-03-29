@@ -5,15 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Builder
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateClassDto {
-    private String name;
-    private String grade;
-    private Long teacherId;
-    private List<Long> kidIds;
+@Data
+public class ClassResponseDto {
+    private boolean isError;
+    private String message;
+    private Object data;
 }

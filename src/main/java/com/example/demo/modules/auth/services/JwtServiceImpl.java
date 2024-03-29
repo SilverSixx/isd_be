@@ -1,6 +1,7 @@
 package com.example.demo.modules.auth.services;
 
-import com.example.demo.modules.auth.config.filters.JwtProperties;
+import com.example.demo.modules.auth.filters.JwtProperties;
+import com.example.demo.modules.auth.services.impl.JwtService;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -1,12 +1,12 @@
 package com.example.demo.modules.auth.services;
 
-import com.example.demo.modules.admin.entities.Admin;
-import com.example.demo.modules.admin.repositories.AdminRepository;
-import com.example.demo.modules.auth.dtos.JwtResponseDto;
+import com.example.demo.modules.admin.Admin;
+import com.example.demo.modules.admin.AdminRepository;
+import com.example.demo.modules.auth.dtos.AuthResponseDto;
 import com.example.demo.modules.auth.dtos.LoginDto;
 import com.example.demo.modules.auth.dtos.SignUpDto;
-import com.example.demo.modules.auth.enums.Role;
-import com.example.demo.modules.teachers.repositories.TeacherRepository;
+import com.example.demo.modules.auth.Role;
+import com.example.demo.modules.teachers.TeacherRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,7 +22,7 @@ public class AuthService {
     private final JwtServiceImpl jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public JwtResponseDto signup(SignUpDto request) {
+    public AuthResponseDto signup(SignUpDto request) {
         final var admin = Admin.builder().username(request.getUsername()).password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.ADMIN).build();
         // check if user exists
@@ -30,11 +30,15 @@ public class AuthService {
             throw new IllegalArgumentException("Username is already taken.");
         }
         adminRepository.save(admin);
-        final var jwt = jwtService.generateToken(admin);
-        return JwtResponseDto.builder().accessToken(jwt).build();
+        return AuthResponseDto.builder()
+                .isError(false)
+                .message("Admin created successfully.")
+                .data(admin)
+                .token(null)
+                .build();
     }
 
-    public JwtResponseDto signin(LoginDto request) {
+    public AuthResponseDto signin(LoginDto request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         final var admin = adminRepository.findByUsername(request.getUsername())
@@ -46,10 +50,20 @@ public class AuthService {
 
             // Generate JWT token for teacher
             final var jwt = jwtService.generateToken(teacher);
-            return JwtResponseDto.builder().accessToken(jwt).build();
+            return AuthResponseDto.builder()
+                    .isError(false)
+                    .message("Teacher login successful.")
+                    .data(teacher)
+                    .token(jwt)
+                    .build();
         }
         final var jwt = jwtService.generateToken(admin);
-        return JwtResponseDto.builder().accessToken(jwt).build();
+        return AuthResponseDto.builder()
+                .isError(false)
+                .message("Admin login successful.")
+                .data(admin)
+                .token(jwt)
+                .build();
     }
 
 }
