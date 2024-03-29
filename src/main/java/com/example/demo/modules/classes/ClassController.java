@@ -23,4 +23,13 @@ public class ClassController {
         return ResponseEntity.ok(classService.getClasses());
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ClassResponseDto> updateClass(@PathVariable Long id,@RequestBody CreateClassDto request) {
+        return ResponseEntity.ok().body(classService.updateClass(id, request));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ClassResponseDto> deleteClass(@PathVariable Long id) {
+        return ResponseEntity.ok().body(classService.deleteClass(id));
+    }
 }

@@ -20,6 +20,16 @@ public class KidController {
 
     @GetMapping("/all")
     public ResponseEntity<KidResponseDto> getKids() {
-        return ResponseEntity.ok(kidService.getKids());
+        return ResponseEntity.ok(kidService.findAll());
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<KidResponseDto> update(@PathVariable Long id, @RequestBody CreateKidDto request) {
+        return ResponseEntity.ok(kidService.update(id, request));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<KidResponseDto> delete(@PathVariable Long id) {
+        return ResponseEntity.ok(kidService.delete(id));
     }
 }

@@ -22,4 +22,9 @@ public class ParentController {
     public ResponseEntity<ParentResponseDto> getParents() {
         return ResponseEntity.ok(parentService.getParents());
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ParentResponseDto> deleteParent(@PathVariable Long id) {
+        return ResponseEntity.ok(parentService.delete(id));
+    }
 }

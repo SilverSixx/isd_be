@@ -40,4 +40,23 @@ public class ParentService {
                 .data(parentRepository.findAll())
                 .build();
     }
+
+    public ParentResponseDto delete(Long id) {
+        final Parent parent = parentRepository.findById(id).orElse(null);
+        assert parent != null;
+
+        final Kid kid = parent.getKid();
+        if (kid != null) {
+            kid.setParent(null);
+            parent.setKid(null);
+            kidRepository.save(kid);
+        }
+
+        parentRepository.deleteById(id);
+        return ParentResponseDto.builder()
+                .isError(false)
+                .message("Parent deleted successfully.")
+                .data(null)
+                .build();
+    }
 }

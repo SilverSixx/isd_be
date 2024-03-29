@@ -78,8 +78,64 @@ public class TeacherService {
 
     }
 
-    public void updateTeacher() {
-        teacherRepository.save(null);
+    public TeacherResponseDto update(Long id, CreateTeacherDto updateTeacherDto) {
+        final Teacher teacherInDb = teacherRepository.findById(id).orElse(null);
+        if (teacherInDb == null) {
+            return TeacherResponseDto.builder()
+                    .isError(true)
+                    .message("Teacher with id " + id + " not found")
+                    .data(null)
+                    .build();
+        }
+        teacherInDb.setFullName(updateTeacherDto.getFullName());
+        teacherInDb.setUsername(updateTeacherDto.getUsername());
+        teacherInDb.setPassword(passwordEncoder.encode(updateTeacherDto.getPassword()));
+        final List<Class> classes = new ArrayList<>();
+        for (Long classId : updateTeacherDto.getClassIds()) {
+            final Class classBelongsTo = classRepository.findById(classId).orElse(null);
+            if (classBelongsTo == null) {
+                return TeacherResponseDto.builder()
+                        .isError(true)
+                        .message("Class with id " + classId + " not found")
+                        .data(null)
+                        .build();
+            }
+            classBelongsTo.setTeacher(teacherInDb);
+            classes.add(classBelongsTo);
+        }
+        teacherInDb.setClasses(classes);
+        teacherRepository.save(teacherInDb);
+        return TeacherResponseDto.builder()
+                .isError(false)
+                .message("Teacher updated successfully")
+                .data(teacherInDb)
+                .build();
+    }
+
+    public TeacherResponseDto delete(Long id) {
+        final Teacher teacherFromDb = teacherRepository.findById(id).orElse(null);
+        if (teacherFromDb == null) {
+            return TeacherResponseDto.builder()
+                    .isError(true)
+                    .message("Teacher not found.")
+                    .build();
+        }
+
+        final List<Class> classes = teacherFromDb.getClasses();
+        if(classes != null) {
+            for (Class c : classes) {
+                c.setTeacher(null);
+            }
+            classRepository.saveAll(classes);
+        }
+
+        teacherFromDb.setClasses(null);
+
+        teacherRepository.deleteById(id);
+        return TeacherResponseDto.builder()
+                .isError(false)
+                .message("Teacher deleted successfully.")
+                .build();
     }
 
 }

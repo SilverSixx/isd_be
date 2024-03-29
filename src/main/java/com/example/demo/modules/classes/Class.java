@@ -28,7 +28,7 @@ public class Class {
     private Integer grade;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "teacher_id", nullable = false)
+    @JoinColumn(name = "teacher_id")
     private Teacher teacher;
 
     @JsonIgnoreProperties("classBelongsTo")

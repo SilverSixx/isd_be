@@ -23,4 +23,13 @@ public class TeacherController {
         return ResponseEntity.ok(teacherService.getTeachers());
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateTeacher(@PathVariable Long id, @RequestBody CreateTeacherDto request) {
+        return ResponseEntity.ok(teacherService.update(id, request));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteTeacher(@PathVariable Long id) {
+        return ResponseEntity.ok(teacherService.delete(id));
+    }
 }
