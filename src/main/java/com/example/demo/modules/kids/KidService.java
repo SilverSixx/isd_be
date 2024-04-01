@@ -2,6 +2,8 @@ package com.example.demo.modules.kids;
 
 import com.example.demo.modules.classes.Class;
 import com.example.demo.modules.classes.ClassRepository;
+import com.example.demo.modules.food.Food;
+import com.example.demo.modules.food.FoodRepository;
 import com.example.demo.modules.kids.dtos.CreateKidDto;
 import com.example.demo.modules.kids.dtos.KidResponseDto;
 import com.example.demo.modules.parents.Parent;
@@ -10,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +23,7 @@ public class KidService {
     private final KidRepository kidRepository;
     private final ClassRepository classRepository;
     private final ParentRepository parentRepository;
+    private final FoodRepository foodRepository;
 
     public KidResponseDto create(CreateKidDto kid) {
         // Extracting year, month, and day from the date of birth
@@ -29,13 +33,14 @@ public class KidService {
         final int day = Integer.parseInt(dobParts[2]);
 
         // Creating a Date object from year, month, and day
-        final Date dob = new Date(year - 1900, month - 1, day);
+        final Date dob = new Date(year - 1900, month - 1, day + 1);
 
         // Creating a new Kid object
         final Kid newKid = Kid.builder()
                 .fullName(kid.getName())
-                .nickName(kid.getNickname())
+                .nickName(kid.getNickName())
                 .dob(dob)
+                .allergyFoods(null)
                 .parent(null)
                 .classBelongsTo(null)
                 .build();
@@ -45,6 +50,7 @@ public class KidService {
             assert parentFromDb != null;
             parentFromDb.setKid(newKid);
             newKid.setParent(parentFromDb);
+            parentRepository.save(parentFromDb);
         }
 
         if (kid.getClassId() != null) {
@@ -52,6 +58,26 @@ public class KidService {
             assert classFromDb != null;
             classFromDb.getKids().add(newKid);
             newKid.setClassBelongsTo(classFromDb);
+            classRepository.save(classFromDb);
+        }
+
+        if (kid.getFoodIds() != null && !kid.getFoodIds().isEmpty()) {
+            List<Food> allergyFoods = new ArrayList<>();
+            for (Long foodId : kid.getFoodIds()) {
+                final Food foodFromDb = foodRepository.findById(foodId).orElse(null);
+                if (foodFromDb != null) {
+                    List<Kid> allergyKids = foodFromDb.getAllergyKids();
+                    if (allergyKids == null) {
+                        allergyKids = new ArrayList<>(); // Initialize the list if null
+                        foodFromDb.setAllergyKids(allergyKids);
+                    }
+                    allergyKids.add(newKid);  // Add the new kid to the food's list of allergy kids
+
+                    allergyFoods.add(foodFromDb);  // Add the food to the new kid's list of allergy foods
+                }
+            }
+            newKid.setAllergyFoods(allergyFoods);  // Set the allergy foods for the new kid
+            foodRepository.saveAll(allergyFoods);  // Save the changes to the database
         }
 
         kidRepository.save(newKid);
@@ -81,7 +107,7 @@ public class KidService {
                     .build();
         }
         kidFromDb.setFullName(updateKidDto.getName());
-        kidFromDb.setNickName(updateKidDto.getNickname());
+        kidFromDb.setNickName(updateKidDto.getNickName());
 
         final Parent parent = parentRepository.findById(updateKidDto.getParentId()).orElse(null);
         assert parent != null;
@@ -93,9 +119,18 @@ public class KidService {
         classBelongsTo.getKids().add(kidFromDb);
         kidFromDb.setClassBelongsTo(classBelongsTo);
 
+        final List<Food> foods = foodRepository.findAllById(updateKidDto.getFoodIds());
+        for (Food food : foods) {
+            food.getAllergyKids().add(kidFromDb);
+            if(!kidFromDb.getAllergyFoods().contains(food)){
+                kidFromDb.getAllergyFoods().add(food);
+            }
+        }
+
         kidRepository.save(kidFromDb);
         parentRepository.save(parent);
         classRepository.save(classBelongsTo);
+        foodRepository.saveAll(foods);
 
         return KidResponseDto.builder()
                 .isError(false)
@@ -125,6 +160,13 @@ public class KidService {
             classRepository.save(classBelongsTo);
         }
 
+        final List<Food> foods = kidFromDb.getAllergyFoods();
+        if(foods != null){
+            for (Food food : foods) {
+                food.getAllergyKids().remove(kidFromDb);
+            }
+            foodRepository.saveAll(foods);
+        }
         kidRepository.delete(kidFromDb);
         return KidResponseDto.builder()
                 .isError(false)

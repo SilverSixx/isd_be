@@ -1,16 +1,12 @@
 package com.example.demo.modules.auth.services;
 
-import com.example.demo.modules.admin.Admin;
 import com.example.demo.modules.admin.AdminRepository;
 import com.example.demo.modules.auth.dtos.AuthResponseDto;
 import com.example.demo.modules.auth.dtos.LoginDto;
-import com.example.demo.modules.auth.dtos.SignUpDto;
-import com.example.demo.modules.auth.Role;
 import com.example.demo.modules.teachers.TeacherRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,25 +14,8 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     private final TeacherRepository teacherRepository;
     private final AdminRepository adminRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtServiceImpl jwtService;
     private final AuthenticationManager authenticationManager;
-
-    public AuthResponseDto signup(SignUpDto request) {
-        final var admin = Admin.builder().username(request.getUsername()).password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.ADMIN).build();
-        // check if user exists
-        if (adminRepository.existsByUsername(request.getUsername())) {
-            throw new IllegalArgumentException("Username is already taken.");
-        }
-        adminRepository.save(admin);
-        return AuthResponseDto.builder()
-                .isError(false)
-                .message("Admin created successfully.")
-                .data(admin)
-                .token(null)
-                .build();
-    }
 
     public AuthResponseDto signin(LoginDto request) {
         authenticationManager.authenticate(

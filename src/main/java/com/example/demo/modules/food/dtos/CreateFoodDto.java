@@ -1,4 +1,4 @@
-package com.example.demo.modules.kids.dtos;
+package com.example.demo.modules.food.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,11 +11,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateKidDto {
+public class CreateFoodDto {
     private String name;
-    private String nickName;
-    private String dob;
-    private Long parentId;
-    private Long classId;
-    private List<Long> foodIds;
+    private Double totalAmount;
+    private List<Long> kidIds;
 }

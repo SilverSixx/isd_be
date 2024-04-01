@@ -2,7 +2,6 @@ package com.example.demo.modules.auth;
 
 import com.example.demo.modules.auth.dtos.AuthResponseDto;
 import com.example.demo.modules.auth.dtos.LoginDto;
-import com.example.demo.modules.auth.dtos.SignUpDto;
 import com.example.demo.modules.auth.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +22,4 @@ public class AuthController {
         return ResponseEntity.ok(authenticationService.signin(request));
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<AuthResponseDto> signup(@RequestBody SignUpDto request) {
-        return ResponseEntity.ok(authenticationService.signup(request));
-    }
 }

@@ -16,5 +16,7 @@ runContainer:
 	docker-compose up -d
 stopContainer:
 	docker-compose down
+initData:
+	docker exec -i isd_be-db-1 mysql -uroot -p2311 isd < "./init.sql"
 
-.PHONEY : connectDb showTables showAdminTable showTeacherTable showKidTable showClassTable dropContainer runContainer stopContainer
+.PHONEY : connectDb showTables showAdminTable showTeacherTable showKidTable showClassTable dropContainer runContainer stopContainer initData
