@@ -24,7 +24,7 @@ public class FoodService {
         if(foodInDb.isPresent()) {
             return FoodResponseDto.builder()
                     .isError(true)
-                    .message("Food already exists")
+                    .message("Món ăn đã tồn tại trong hệ thống.")
                     .build();
         }
 
@@ -39,7 +39,7 @@ public class FoodService {
             if(kids.isEmpty()) {
                 return FoodResponseDto.builder()
                         .isError(true)
-                        .message("No kids found with the provided ids")
+                        .message("Không tìm thấy trẻ nào với nhưng mã id đã cung cấp.")
                         .data(null)
                         .build();
             }
@@ -58,7 +58,7 @@ public class FoodService {
 
         return FoodResponseDto.builder()
                 .isError(false)
-                .message("Food created successfully")
+                .message("Món ăn đã được tạo thành công.")
                 .data(food)
                 .build();
 
@@ -73,7 +73,7 @@ public class FoodService {
         final List<Food> foods = foodRepository.findAll();
         return FoodResponseDto.builder()
                 .isError(false)
-                .message("Foods retrieved successfully")
+                .message("Các món ăn đã được tải thành công.")
                 .data(foods)
                 .build();
     }
@@ -96,7 +96,7 @@ public class FoodService {
         foodRepository.save(foodInDb);
         return FoodResponseDto.builder()
                 .isError(false)
-                .message("Food updated successfully")
+                .message("Món ăn đã được cập nhật thành công")
                 .data(foodInDb)
                 .build();
 
@@ -117,7 +117,7 @@ public class FoodService {
         foodRepository.delete(foodInDb);
         return FoodResponseDto.builder()
                 .isError(false)
-                .message("Food deleted successfully")
+                .message("Món ăn đã được xóa thành công")
                 .build();
     }
 }

@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.*;
 public class ClassController {
     private final ClassService classService;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ClassResponseDto> getClass(@PathVariable Long id) {
+        return ResponseEntity.ok().body(classService.findById(id));
+    }
+
     @PostMapping("/create")
     public ResponseEntity<ClassResponseDto> createClass(@RequestBody CreateClassDto request) {
         return ResponseEntity.ok().body(classService.createClass(request));

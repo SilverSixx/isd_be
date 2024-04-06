@@ -26,7 +26,7 @@ public class ClassService {
         if (classFromDb != null) {
             return ClassResponseDto.builder()
                     .isError(true)
-                    .message("Class already exists.")
+                    .message("Lớp học đã tồn tại.")
                     .data(null)
                     .build();
         }
@@ -45,7 +45,7 @@ public class ClassService {
             if (k == null) {
                 return ClassResponseDto.builder()
                         .isError(true)
-                        .message("Kid with id " + id + " not found")
+                        .message("Trẻ với id " + id + " không tồn tại.")
                         .data(null)
                         .build();
             }
@@ -56,7 +56,7 @@ public class ClassService {
         classRepository.save(newClass);
         return ClassResponseDto.builder()
                 .isError(false)
-                .message("Class created successfully.")
+                .message("Lớp học đã được tạo thành công.")
                 .data(newClass)
                 .build();
 
@@ -67,7 +67,7 @@ public class ClassService {
         if (classFromDb == null) {
             return ClassResponseDto.builder()
                     .isError(true)
-                    .message("Class not found.")
+                    .message("Lớp học không tồn tại.")
                     .data(null)
                     .build();
         }
@@ -85,7 +85,7 @@ public class ClassService {
             if (k == null) {
                 return ClassResponseDto.builder()
                         .isError(true)
-                        .message("Kid with id " + i + " not found")
+                        .message("Trẻ với id " + i + " không tồn tại.")
                         .data(null)
                         .build();
             }
@@ -96,7 +96,7 @@ public class ClassService {
         classRepository.save(classFromDb);
         return ClassResponseDto.builder()
                 .isError(false)
-                .message("Class updated successfully.")
+                .message("Lớp học đã được cập nhật thành công.")
                 .data(classFromDb)
                 .build();
     }
@@ -106,7 +106,7 @@ public class ClassService {
         if (classFromDb == null) {
             return ClassResponseDto.builder()
                     .isError(true)
-                    .message("Class not found.")
+                    .message("Lớp học không tồn tại.")
                     .data(null)
                     .build();
         }
@@ -130,7 +130,7 @@ public class ClassService {
         classRepository.delete(classFromDb);
         return ClassResponseDto.builder()
                 .isError(false)
-                .message("Class deleted successfully.")
+                .message("Lớp học đã được xóa thành công.")
                 .data(null)
                 .build();
     }
@@ -139,8 +139,24 @@ public class ClassService {
         final List<Class> classes = classRepository.findAll();
         return ClassResponseDto.builder()
                 .isError(false)
-                .message("Classes fetched successfully")
+                .message("Các lớp học đã được tải thành công.")
                 .data(classes)
+                .build();
+    }
+
+    public ClassResponseDto findById(Long id) {
+        final Class classFromDb = classRepository.findById(id).orElse(null);
+        if (classFromDb == null) {
+            return ClassResponseDto.builder()
+                    .isError(true)
+                    .message("Lớp học không tồn tại.")
+                    .data(null)
+                    .build();
+        }
+        return ClassResponseDto.builder()
+                .isError(false)
+                .message("Lớp học đã được tải thành công.")
+                .data(classFromDb)
                 .build();
     }
 

@@ -23,7 +23,7 @@ public class TeacherService {
         final List<Teacher> teachers = teacherRepository.findAll();
         return TeacherResponseDto.builder()
                 .isError(false)
-                .message("Teachers fetched successfully")
+                .message("Giáo viên đã được lấy từ dữ liệu thành công.")
                 .data(teachers)
                 .build();
     }
@@ -41,7 +41,7 @@ public class TeacherService {
         if (teacherInDb != null) {
             return TeacherResponseDto.builder()
                     .isError(true)
-                    .message("Teacher with username " + createTeacherDto.getUsername() + " already exists")
+                    .message("Giáo viên với tên đăng nhập là " + createTeacherDto.getUsername() + " đã tồn tại.")
                     .data(null)
                     .build();
         }
@@ -52,7 +52,7 @@ public class TeacherService {
                 if (classBelongsTo == null) {
                     return TeacherResponseDto.builder()
                             .isError(true)
-                            .message("Class with id " + classId + " not found")
+                            .message("Lớp học với mã id " + classId + " không tồn tại.")
                             .data(null)
                             .build();
                 }
@@ -72,7 +72,7 @@ public class TeacherService {
 
         return TeacherResponseDto.builder()
                 .isError(false)
-                .message("Teacher created successfully")
+                .message("Giáo viên đã được tạo thành công.")
                 .data(teacher)
                 .build();
 
@@ -83,7 +83,7 @@ public class TeacherService {
         if (teacherInDb == null) {
             return TeacherResponseDto.builder()
                     .isError(true)
-                    .message("Teacher with id " + id + " not found")
+                    .message("Giáo viên với mã id " + id + " không tồn tại.")
                     .data(null)
                     .build();
         }
@@ -96,7 +96,7 @@ public class TeacherService {
             if (classBelongsTo == null) {
                 return TeacherResponseDto.builder()
                         .isError(true)
-                        .message("Class with id " + classId + " not found")
+                        .message("Lớp học với mã id " + classId + " không tồn tại.")
                         .data(null)
                         .build();
             }
@@ -107,7 +107,7 @@ public class TeacherService {
         teacherRepository.save(teacherInDb);
         return TeacherResponseDto.builder()
                 .isError(false)
-                .message("Teacher updated successfully")
+                .message("Giáo viên đã được cập nhật thành công.")
                 .data(teacherInDb)
                 .build();
     }
@@ -117,7 +117,7 @@ public class TeacherService {
         if (teacherFromDb == null) {
             return TeacherResponseDto.builder()
                     .isError(true)
-                    .message("Teacher not found.")
+                    .message("Giáo viên với mã id " + id + " không tôn tại.")
                     .build();
         }
 
@@ -134,7 +134,7 @@ public class TeacherService {
         teacherRepository.deleteById(id);
         return TeacherResponseDto.builder()
                 .isError(false)
-                .message("Teacher deleted successfully.")
+                .message("Giáo viên đã được xóa thành công.")
                 .build();
     }
 

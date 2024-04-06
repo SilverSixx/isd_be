@@ -1,23 +1,27 @@
 package com.example.demo.modules.parents;
 
+import com.example.demo.modules.auth.Role;
 import com.example.demo.modules.kids.Kid;
 import com.example.demo.modules.kids.KidRepository;
 import com.example.demo.modules.parents.dtos.CreateParentDto;
 import com.example.demo.modules.parents.dtos.ParentResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class ParentService {
+    private final PasswordEncoder passwordEncoder;
     private final ParentRepository parentRepository;
     private final KidRepository kidRepository;
     public ParentResponseDto create(CreateParentDto createParentDto) {
         Parent parent = Parent.builder()
                 .fullName(createParentDto.getFullName())
                 .username(createParentDto.getUsername())
-                .password(createParentDto.getPassword())
+                .password(passwordEncoder.encode(createParentDto.getPassword()))
                 .kid(null)
+                .role(Role.PARENT)
                 .build();
         if(createParentDto.getKidId() != null) {
             Kid kid = kidRepository.findById(createParentDto.getKidId()).orElse(null);
@@ -28,7 +32,7 @@ public class ParentService {
         parentRepository.save(parent);
         return ParentResponseDto.builder()
                 .isError(false)
-                .message("Parent created successfully.")
+                .message("Phụ huynh đã được tạo thành công.")
                 .data(parent)
                 .build();
     }
@@ -36,7 +40,7 @@ public class ParentService {
     public ParentResponseDto getParents() {
         return ParentResponseDto.builder()
                 .isError(false)
-                .message("Parents fetched successfully.")
+                .message("Phụ huynh đã được lấy từ dữ liệu thành công.")
                 .data(parentRepository.findAll())
                 .build();
     }
@@ -55,7 +59,7 @@ public class ParentService {
         parentRepository.deleteById(id);
         return ParentResponseDto.builder()
                 .isError(false)
-                .message("Parent deleted successfully.")
+                .message("Phụ huynh đã được xóa thành công.")
                 .data(null)
                 .build();
     }

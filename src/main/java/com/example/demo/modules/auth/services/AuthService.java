@@ -3,45 +3,44 @@ package com.example.demo.modules.auth.services;
 import com.example.demo.modules.admin.AdminRepository;
 import com.example.demo.modules.auth.dtos.AuthResponseDto;
 import com.example.demo.modules.auth.dtos.LoginDto;
+import com.example.demo.modules.parents.ParentRepository;
 import com.example.demo.modules.teachers.TeacherRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
-    private final TeacherRepository teacherRepository;
-    private final AdminRepository adminRepository;
     private final JwtServiceImpl jwtService;
     private final AuthenticationManager authenticationManager;
 
     public AuthResponseDto signin(LoginDto request) {
-        authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-        final var admin = adminRepository.findByUsername(request.getUsername())
-                .orElse(null);
-        // If not found in Admin repository, try to find in Teacher repository
-        if (admin == null) {
-            final var teacher = teacherRepository.findByUsername(request.getUsername())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
-
-            // Generate JWT token for teacher
-            final var jwt = jwtService.generateToken(teacher);
-            return AuthResponseDto.builder()
-                    .isError(false)
-                    .message("Teacher login successful.")
-                    .data(teacher)
-                    .token(jwt)
-                    .build();
-        }
-        final var jwt = jwtService.generateToken(admin);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String jwt = jwtService.generateToken(userDetails);
         return AuthResponseDto.builder()
                 .isError(false)
-                .message("Admin login successful.")
-                .data(admin)
+                .message("Đăng nhập thành công.")
+                .data(userDetails)
                 .token(jwt)
+                .build();
+
+    }
+
+    public AuthResponseDto logout() {
+        SecurityContextHolder.clearContext();
+        return AuthResponseDto.builder()
+                .isError(false)
+                .message("Đăng xuất thành công.")
                 .build();
     }
 

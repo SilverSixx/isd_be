@@ -22,4 +22,10 @@ public class AuthController {
         return ResponseEntity.ok(authenticationService.signin(request));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<AuthResponseDto> logout() {
+        return ResponseEntity.ok(authenticationService.logout());
+    }
+
+
 }

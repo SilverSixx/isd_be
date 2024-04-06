@@ -6,6 +6,7 @@ import com.example.demo.modules.food.Food;
 import com.example.demo.modules.food.FoodRepository;
 import com.example.demo.modules.kids.dtos.CreateKidDto;
 import com.example.demo.modules.kids.dtos.KidResponseDto;
+import com.example.demo.modules.kids.dtos.KidWithClassDto;
 import com.example.demo.modules.parents.Parent;
 import com.example.demo.modules.parents.ParentRepository;
 import lombok.RequiredArgsConstructor;
@@ -84,7 +85,7 @@ public class KidService {
 
         return KidResponseDto.builder()
                 .isError(false)
-                .message("Kid created successfully.")
+                .message("Trẻ đã được tạo thành công.")
                 .data(newKid)
                 .build();
     }
@@ -93,7 +94,7 @@ public class KidService {
         final List<Kid> kids = kidRepository.findAll();
         return KidResponseDto.builder()
                 .isError(false)
-                .message("Kids fetched successfully.")
+                .message("Thông tin của tất cả trẻ đã được tìm thấy.")
                 .data(kids)
                 .build();
     }
@@ -103,7 +104,7 @@ public class KidService {
         if (kidFromDb == null) {
             return KidResponseDto.builder()
                     .isError(true)
-                    .message("Kid not found.")
+                    .message("Trẻ không tồn tại.")
                     .build();
         }
         kidFromDb.setFullName(updateKidDto.getName());
@@ -134,7 +135,7 @@ public class KidService {
 
         return KidResponseDto.builder()
                 .isError(false)
-                .message("Kid updated successfully.")
+                .message("Trẻ đã được cập nhật.")
                 .data(kidFromDb)
                 .build();
     }
@@ -144,7 +145,7 @@ public class KidService {
         if (kidFromDb == null) {
             return KidResponseDto.builder()
                     .isError(true)
-                    .message("Kid not found.")
+                    .message("Trẻ không tồn tại.")
                     .build();
         }
 
@@ -170,7 +171,64 @@ public class KidService {
         kidRepository.delete(kidFromDb);
         return KidResponseDto.builder()
                 .isError(false)
-                .message("Kid deleted successfully.")
+                .message("Xóa trẻ thành công.")
                 .build();
     }
+
+    public KidResponseDto kickKid(KidWithClassDto kidWithClassDto) {
+        final Kid kidFromDb = kidRepository.findById(kidWithClassDto.getKidId()).orElse(null);
+        if (kidFromDb == null) {
+            return KidResponseDto.builder()
+                    .isError(true)
+                    .message("Trẻ không tồn tại.")
+                    .build();
+        }
+        final Class classBelongsTo = classRepository.findById(kidWithClassDto.getClassId()).orElse(null);
+        if (classBelongsTo == null) {
+            return KidResponseDto.builder()
+                    .isError(true)
+                    .message("Lớp không tồn tại.")
+                    .build();
+        }
+
+        classBelongsTo.getKids().remove(kidFromDb);
+        kidFromDb.setClassBelongsTo(null);
+        classRepository.save(classBelongsTo);
+        kidRepository.save(kidFromDb);
+
+        return KidResponseDto.builder()
+                .isError(false)
+                .message("Xóa thành công.")
+                .data(kidFromDb)
+                .build();
+    }
+
+    public KidResponseDto addKidToClass(KidWithClassDto kidWithClassDto) {
+        final Kid kidFromDb = kidRepository.findById(kidWithClassDto.getKidId()).orElse(null);
+        if (kidFromDb == null) {
+            return KidResponseDto.builder()
+                    .isError(true)
+                    .message("Trẻ không tồn tại.")
+                    .build();
+        }
+        final Class classBelongsTo = classRepository.findById(kidWithClassDto.getClassId()).orElse(null);
+        if (classBelongsTo == null) {
+            return KidResponseDto.builder()
+                    .isError(true)
+                    .message("Lớp không tồn tại.")
+                    .build();
+        }
+
+        classBelongsTo.getKids().add(kidFromDb);
+        kidFromDb.setClassBelongsTo(classBelongsTo);
+        classRepository.save(classBelongsTo);
+        kidRepository.save(kidFromDb);
+
+        return KidResponseDto.builder()
+                .isError(false)
+                .message("Thêm thành công.")
+                .data(kidFromDb)
+                .build();
+    }
+
 }
