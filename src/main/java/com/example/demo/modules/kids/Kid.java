@@ -1,7 +1,6 @@
 package com.example.demo.modules.kids;
 
 import com.example.demo.modules.classes.Class;
-import com.example.demo.modules.food.Food;
 import com.example.demo.modules.parents.Parent;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -40,12 +39,4 @@ public class Kid {
     @JoinColumn(name = "class_id")
     private Class classBelongsTo;
 
-    @ManyToMany
-    @JoinTable(
-            name = "kid_allergy_food",
-            joinColumns = @JoinColumn(name = "kid_id"),
-            inverseJoinColumns = @JoinColumn(name = "food_id")
-    )
-    @JsonIgnoreProperties("allergyKids")
-    private List<Food> allergyFoods;
 }

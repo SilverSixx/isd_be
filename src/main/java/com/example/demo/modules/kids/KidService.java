@@ -37,27 +37,29 @@ public class KidService {
         final Kid newKid = Kid.builder()
                 .fullName(kid.getName())
                 .nickName(kid.getNickName())
-                .dob(dob)
-                .allergyFoods(null)
-                .parent(null)
                 .classBelongsTo(null)
+                .dob(dob)
                 .build();
 
         if (kid.getParentId() != null) {
             Parent parentFromDb = parentRepository.findById(kid.getParentId()).orElse(null);
-            assert parentFromDb != null;
-            parentFromDb.setKid(newKid);
-            newKid.setParent(parentFromDb);
-            parentRepository.save(parentFromDb);
+            if (parentFromDb != null) {
+                parentFromDb.setKid(newKid);
+                newKid.setParent(parentFromDb);
+                 // Save the parent to update the association
+            }
         }
+
 
         if (kid.getClassId() != null) {
             Class classFromDb = classRepository.findById(kid.getClassId()).orElse(null);
-            assert classFromDb != null;
-            classFromDb.getKids().add(newKid);
-            newKid.setClassBelongsTo(classFromDb);
-            classRepository.save(classFromDb);
+            if (classFromDb != null) {
+                classFromDb.getKids().add(newKid);
+                newKid.setClassBelongsTo(classFromDb);
+                classRepository.save(classFromDb); // Save the class to update the association
+            }
         }
+
 
         kidRepository.save(newKid);
 

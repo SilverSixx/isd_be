@@ -17,5 +17,4 @@ public class CreateKidDto {
     private String dob;
     private Long parentId;
     private Long classId;
-    private List<Long> foodIds;
 }
