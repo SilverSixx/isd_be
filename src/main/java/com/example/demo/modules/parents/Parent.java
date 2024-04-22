@@ -32,6 +32,9 @@ public class Parent implements UserDetails {
     private String username;
     private String password;
 
+    @Column(unique = true)
+    private String idCardNumber;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 

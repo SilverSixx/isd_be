@@ -21,6 +21,7 @@ public class ParentService {
                 .username(createParentDto.getUsername())
                 .password(passwordEncoder.encode(createParentDto.getPassword()))
                 .kid(null)
+                .idCardNumber(createParentDto.getIdCardNumber())
                 .role(Role.PARENT)
                 .build();
         if(createParentDto.getKidId() != null) {

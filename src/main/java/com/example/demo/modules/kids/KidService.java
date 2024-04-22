@@ -41,12 +41,13 @@ public class KidService {
                 .dob(dob)
                 .build();
 
+
         if (kid.getParentId() != null) {
             Parent parentFromDb = parentRepository.findById(kid.getParentId()).orElse(null);
             if (parentFromDb != null) {
                 parentFromDb.setKid(newKid);
                 newKid.setParent(parentFromDb);
-                 // Save the parent to update the association
+                // Save the parent to update the association
             }
         }
 
@@ -56,7 +57,6 @@ public class KidService {
             if (classFromDb != null) {
                 classFromDb.getKids().add(newKid);
                 newKid.setClassBelongsTo(classFromDb);
-                classRepository.save(classFromDb); // Save the class to update the association
             }
         }
 
@@ -191,6 +191,42 @@ public class KidService {
         return KidResponseDto.builder()
                 .isError(false)
                 .message("Thêm thành công.")
+                .data(kidFromDb)
+                .build();
+    }
+
+    // this function perform logic to move a kid to a new class, those 2 are provided in the dto by ids
+    public KidResponseDto moveKidToClass(KidWithClassDto kidWithClassDto) {
+        final Kid kidFromDb = kidRepository.findById(kidWithClassDto.getKidId()).orElse(null);
+        if (kidFromDb == null) {
+            return KidResponseDto.builder()
+                    .isError(true)
+                    .message("Trẻ không tồn tại.")
+                    .build();
+        }
+
+        final Class classBelongsTo = classRepository.findById(kidWithClassDto.getClassId()).orElse(null);
+        if (classBelongsTo == null) {
+            return KidResponseDto.builder()
+                    .isError(true)
+                    .message("Lớp không tồn tại.")
+                    .build();
+        }
+
+        final Class oldClass = kidFromDb.getClassBelongsTo();
+        if (oldClass != null) {
+            oldClass.getKids().remove(kidFromDb);
+            classRepository.save(oldClass);
+        }
+
+        classBelongsTo.getKids().add(kidFromDb);
+        kidFromDb.setClassBelongsTo(classBelongsTo);
+        classRepository.save(classBelongsTo);
+        kidRepository.save(kidFromDb);
+
+        return KidResponseDto.builder()
+                .isError(false)
+                .message("Chuyển lớp thành công.")
                 .data(kidFromDb)
                 .build();
     }

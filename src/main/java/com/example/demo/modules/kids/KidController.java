@@ -39,6 +39,11 @@ public class KidController {
         return ResponseEntity.ok(kidService.addKidToClass(request));
     }
 
+    @PutMapping("/move-to-class")
+    public ResponseEntity<KidResponseDto> moveKidToClass(@RequestBody KidWithClassDto request) {
+        return ResponseEntity.ok(kidService.moveKidToClass(request));
+    }
+
     @PutMapping("/kick-from-class")
     public ResponseEntity<KidResponseDto> kickKid(@RequestBody KidWithClassDto request) {
         return ResponseEntity.ok(kidService.kickKid(request));

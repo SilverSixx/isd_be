@@ -14,4 +14,5 @@ public class CreateParentDto {
     private String username;
     private String password;
     private Long kidId;
+    private String idCardNumber;
 }

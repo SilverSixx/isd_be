@@ -39,18 +39,21 @@ public class ClassService {
                 .kids(null)
                 .build();
 
-        List<Kid> kids = new ArrayList<>();
-        for (Long id : request.getKidIds()) {
-            final Kid k = kidRepository.findById(id).orElse(null);
-            if (k == null) {
-                return ClassResponseDto.builder()
-                        .isError(true)
-                        .message("Trẻ với id " + id + " không tồn tại.")
-                        .data(null)
-                        .build();
+        List<Kid> kids = null;
+        if (request.getKidIds() != null) {
+            kids = new ArrayList<>();
+            for (Long id : request.getKidIds()) {
+                final Kid k = kidRepository.findById(id).orElse(null);
+                if (k == null) {
+                    return ClassResponseDto.builder()
+                            .isError(true)
+                            .message("Trẻ với id " + id + " không tồn tại.")
+                            .data(null)
+                            .build();
+                }
+                k.setClassBelongsTo(newClass);
+                kids.add(k);
             }
-            k.setClassBelongsTo(newClass);
-            kids.add(k);
         }
         newClass.setKids(kids);
         classRepository.save(newClass);
