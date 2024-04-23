@@ -38,7 +38,7 @@ public class Parent implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToOne(cascade = CascadeType.MERGE)
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JsonIgnoreProperties("parent")
     private Kid kid;
 

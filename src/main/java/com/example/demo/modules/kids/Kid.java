@@ -31,7 +31,7 @@ public class Kid {
     @Column(name = "date_of_birth")
     private Date dob;
 
-    @OneToOne(cascade = CascadeType.MERGE)
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JsonIgnoreProperties("kid")
     private Parent parent;
 

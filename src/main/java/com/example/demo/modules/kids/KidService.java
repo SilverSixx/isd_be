@@ -90,10 +90,21 @@ public class KidService {
         kidFromDb.setFullName(updateKidDto.getName());
         kidFromDb.setNickName(updateKidDto.getNickName());
 
-        final Parent parent = parentRepository.findById(updateKidDto.getParentId()).orElse(null);
-        assert parent != null;
-        parent.setKid(kidFromDb);
-        kidFromDb.setParent(parent);
+        final Parent newParent = parentRepository.findById(updateKidDto.getParentId()).orElse(null);
+        if (newParent == null) {
+            return KidResponseDto.builder()
+                    .isError(true)
+                    .message("Phụ huynh không tồn tại.")
+                    .build();
+        }
+
+        // Remove the kid from the previous parent if it exists
+        if (kidFromDb.getParent() != null) {
+            kidFromDb.getParent().setKid(null);
+        }
+        kidFromDb.setParent(newParent);
+        newParent.setKid(kidFromDb);
+
 
         final Class classBelongsTo = classRepository.findById(updateKidDto.getClassId()).orElse(null);
         assert classBelongsTo != null;
@@ -101,8 +112,6 @@ public class KidService {
         kidFromDb.setClassBelongsTo(classBelongsTo);
 
         kidRepository.save(kidFromDb);
-        parentRepository.save(parent);
-        classRepository.save(classBelongsTo);
 
         return KidResponseDto.builder()
                 .isError(false)
